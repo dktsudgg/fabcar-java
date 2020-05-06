@@ -28,7 +28,7 @@ public class EnrollAdmin {
 		props.put("pemFile",
 			"ca.org1.example.com-cert.pem");
 		props.put("allowAllHostNames", "true");
-		HFCAClient caClient = HFCAClient.createNewInstance("https://192.168.0.140:7054", props);
+		HFCAClient caClient = HFCAClient.createNewInstance("https://34.64.151.5:7054", props);
 		CryptoSuite cryptoSuite = CryptoSuiteFactory.getDefault().getCryptoSuite();
 		caClient.setCryptoSuite(cryptoSuite);
 
@@ -36,7 +36,7 @@ public class EnrollAdmin {
 		Wallet wallet = Wallet.createFileSystemWallet(Paths.get("wallet"));
 
 		// Check to see if we've already enrolled the admin user.
-		boolean adminExists = wallet.exists("admin");
+		boolean adminExists = wallet.exists("admingcp");
         if (adminExists) {
             System.out.println("An identity for the admin user \"admin\" already exists in the wallet");
             return;
@@ -44,11 +44,11 @@ public class EnrollAdmin {
 
         // Enroll the admin user, and import the new identity into the wallet.
         final EnrollmentRequest enrollmentRequestTLS = new EnrollmentRequest();
-        enrollmentRequestTLS.addHost("192.168.0.4");
+        enrollmentRequestTLS.addHost("34.64.151.5");
         enrollmentRequestTLS.setProfile("tls");
         Enrollment enrollment = caClient.enroll("admin", "adminpw", enrollmentRequestTLS);
         Identity user = Identity.createIdentity("Org1MSP", enrollment.getCert(), enrollment.getKey());
-        wallet.put("admin", user);
+        wallet.put("admingcp", user);
 		System.out.println("Successfully enrolled user \"admin\" and imported it into the wallet");
 	}
 }

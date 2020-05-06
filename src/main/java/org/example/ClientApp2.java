@@ -4,16 +4,16 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.example;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
 import org.hyperledger.fabric.gateway.Wallet;
 
-public class ClientApp {
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
+public class ClientApp2 {
 
 	static {
 		System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "false");
@@ -45,7 +45,7 @@ public class ClientApp {
 			for(int i=0; i< 16; i++){
 //				Network network = gateway.getNetwork("mychannel");
 //				networks.add(network);
-				contracts.add( network.getContract("fabcar") );
+				contracts.add( network.getContract("sso") );
 			}
 
 			class CustomRunnable implements Runnable{
@@ -66,7 +66,7 @@ public class ClientApp {
 				public void run() {
 
 					try {
-						for (int i = 0; i < 100; i++) {
+						for (int i = 0; i < 10; i++) {
 							long unit_start = System.currentTimeMillis();
 
 							// 조회 트랜잭션 1
@@ -78,7 +78,8 @@ public class ClientApp {
 //							System.out.println(new String(result));
 
 							// 업데이트 트랜잭션
-							cr.submitTransaction("changeCarOwner", "CAR"+this.number, "Archie");
+							byte[] result = cr.submitTransaction("queryLedger", "PUBKEY"+this.number, "1" );
+							System.out.println(new String(result));
 
 							long unit_end = System.currentTimeMillis();
 							double unit_latency = (unit_end - unit_start) / 1000.0;
@@ -163,7 +164,7 @@ public class ClientApp {
 
 	}
 
-	public static void main__old(String[] args) throws Exception {
+	public static void main___old(String[] args) throws Exception {
 		// Load a file system based wallet for managing identities.
 		Path walletPath = Paths.get("wallet");
 		Wallet wallet = Wallet.createFileSystemWallet(walletPath);
@@ -178,37 +179,18 @@ public class ClientApp {
 
 			// get the network and contract
 			Network network = gateway.getNetwork("mychannel");
-			Contract contract = network.getContract("fabcar");
+			Contract contract = network.getContract("sso");
 
 			byte[] result;
 
-			result = contract.evaluateTransaction("queryAllCars");
-			System.out.println(new String(result));
-
-//			contract.submitTransaction("createCar", "CAR10", "VW", "Polo", "Grey", "Mary");
-//			contract.submitTransaction("createCar", "CAR11", "VW", "Polo", "Grey", "Mary");
-//			contract.submitTransaction("createCar", "CAR12", "VW", "Polo", "Grey", "Mary");
-//			contract.submitTransaction("createCar", "CAR13", "VW", "Polo", "Grey", "Mary");
-//			contract.submitTransaction("createCar", "CAR14", "VW", "Polo", "Grey", "Mary");
-//			contract.submitTransaction("createCar", "CAR15", "VW", "Polo", "Grey", "Mary");
-//			contract.submitTransaction("createCar", "CAR16", "VW", "Polo", "Grey", "Mary");
-			for(int i=130; i<=10000; i++){	// 614 까지 만들었음!!!!!!!!!!!!!!!!!!!!! gcp는 129까지..
-				contract.submitTransaction("createCar", "CAR"+i, "VW", "Polo", "Grey", "Mary");
-				System.out.println("CAR"+i+" is created..");
+			for(int i=6; i<=10000; i++){
+				contract.submitTransaction("createUserPublicKey", "PUBKEY"+i, "ci_"+i, "publicKey_"+i);
+				System.out.println("PUBKEY"+i+" is created..");
 			}
 
 //			contract.submitTransaction("createCar", "CAR41", "VW", "Polo", "Grey", "Mary");
 //
 //			result = contract.evaluateTransaction("queryCar", "CAR41");
-//			System.out.println(new String(result));
-
-			contract.submitTransaction("changeCarOwner", "CAR4", "Archie");
-
-			result = contract.evaluateTransaction("queryCar", "CAR4");
-			System.out.println(new String(result));
-
-//			contract.submitTransaction("createCar", "CAR108", "VW", "Polooo", "Grey", "Kyoujin");
-//			result = contract.evaluateTransaction("queryCar", "CAR108");
 //			System.out.println(new String(result));
 		}
 	}
